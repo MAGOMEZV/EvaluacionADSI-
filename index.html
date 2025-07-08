@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Perfil Marco Antonio</title>
+<style>
+  /* Reset básico */
+  * {
+    margin: 0; padding: 0; box-sizing: border-box;
+  }
+  html, body {
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+    background: #000;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #fireCanvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+  }
+  .container {
+    background: rgba(0,0,0,0.6);
+    padding: 2rem 3rem;
+    border-radius: 12px;
+    max-width: 400px;
+    text-align: center;
+    backdrop-filter: blur(5px);
+  }
+  h1 {
+    font-weight: 700;
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+    color: #ff9a00;
+    text-shadow: 0 0 10px #ff7c00;
+  }
+  p {
+    font-weight: 300;
+    font-size: 1rem;
+    margin-bottom: 0.6rem;
+    color: #f0e7d9;
+  }
+  .label {
+    font-weight: 600;
+    color: #ffb84d;
+  }
+</style>
+</head>
+<body>
+<canvas id="fireCanvas"></canvas>
+
+<div class="container">
+  <h1>Marco Antonio Gomez Vivar</h1>
+  <p><span class="label">Nombre completo:</span> Marco Antonio Gomez Vivar</p>
+  <p><span class="label">Email:</span> marco.gomez@example.com</p>
+  <p><span class="label">Teléfono:</span> +593 9 1234 5678</p>
+  <p><span class="label">Dirección:</span> Quito, Ecuador</p>
+  <p><span class="label">Profesión:</span> Desarrollador de software</p>
+  <p><span class="label">Descripción:</span> Apasionado por la tecnología, desarrollo de aplicaciones web y móviles, con experiencia en JavaScript, Node.js y React.</p>
+</div>
+
+<script>
+// Variables para el fuego
+const canvas = document.getElementById('fireCanvas');
+const ctx = canvas.getContext('2d');
+let width, height;
+
+function resize() {
+  width = canvas.width = window.innerWidth;
+  height = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// Crear partículas simples para simular fuego
+class Particle {
+  constructor() {
+    this.reset();
+  }
+  reset() {
+    this.x = Math.random() * width;
+    this.y = height + Math.random() * 100;
+    this.size = 10 + Math.random() * 20;
+    this.speedY = 1 + Math.random() * 3;
+    this.speedX = (Math.random() - 0.5) * 1;
+    this.alpha = 0.8 + Math.random() * 0.2;
+    this.life = 60 + Math.random() * 40;
+    this.age = 0;
+    this.color = `hsl(${30 + Math.random() * 40}, 100%, 50%)`;
+  }
+  update() {
+    this.x += this.speedX;
+    this.y -= this.speedY;
+    this.age++;
+    this.alpha -= 0.012;
+    if (this.age >= this.life || this.alpha <= 0) {
+      this.reset();
+    }
+  }
+  draw() {
+    const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+    gradient.addColorStop(0, `rgba(255, 200, 0, ${this.alpha})`);
+    gradient.addColorStop(0.5, `rgba(255, 140, 0, ${this.alpha * 0.6})`);
+    gradient.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+const particlesCount = 80;
+const particles = [];
+
+for(let i = 0; i < particlesCount; i++) {
+  particles.push(new Particle());
+}
+
+function animate() {
+  ctx.clearRect(0, 0, width, height);
+  for(let p of particles) {
+    p.update();
+    p.draw();
+  }
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+</body>
+</html>
